@@ -12,7 +12,7 @@ console.log("userId =", userId);
 
     try {
         const user = await User.findById(userId);
-        console.log("user =", user);    
+        console.log("user =", user);
 
         if (!user) {
             return res.json({
