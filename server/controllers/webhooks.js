@@ -3,6 +3,7 @@ import User from "../models/User.js";
 
 //api controller function to manage clerk user with database
 export const clerkWebhooks = async (req, res) => {
+    console.log("Webhook received");
     try {
         //create a svix instance with clerk webhook secret
         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
@@ -15,9 +16,10 @@ export const clerkWebhooks = async (req, res) => {
         })
         //getting data from request body
         const {data,type} = req.body;
+        console.log("Webhook event:", type);
 
         switch (type) {
-            case 'user.creates':{
+            case 'user.created':{
                 const userData={
                     _id:data.id,
                     email:data.email_addresses[0].email_address,
@@ -47,10 +49,12 @@ export const clerkWebhooks = async (req, res) => {
                 res.json({})
                 break;
             }
+            default:
+                break;
         }
 
     } catch (error) {
-        console.error(error.message);
-        return res.status(400).json({ success : false, message: 'Invalid webhook'  });
+        res.json({ success: false, message: error.message })
     }
+
 }

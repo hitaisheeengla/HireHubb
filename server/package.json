@@ -12,6 +12,7 @@
   "author": "Hitaishee",
   "license": "ISC",
   "dependencies": {
+    "@clerk/express": "^2.1.26",
     "@sentry/node": "^10.55.0",
     "@sentry/profiling-node": "^10.55.0",
     "bcrypt": "^6.0.0",

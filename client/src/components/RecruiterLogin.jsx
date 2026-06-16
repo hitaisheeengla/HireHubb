@@ -18,7 +18,7 @@ const RecruiterLogin = () => {
 
     const [isTextDataSubmited, setIsTextDataSubmited] = useState(false)
 
-    const { setShowRecruiterLogin} = useContext(AppContext)
+    const { setShowRecruiterLogin, backendURL,setCompanyData, setCompanyToken } = useContext(AppContext)
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
@@ -27,47 +27,46 @@ const RecruiterLogin = () => {
             return setIsTextDataSubmited(true)
         }
 
-        // try {
+        try {
 
-        //     if (state === "Login") {
+            if (state === "Login") {
 
-        //         const { data } = await axios.post(backendUrl + '/api/company/login', { email, password })
+                const { data } = await axios.post(backendURL + '/api/company/login', { email, password })
 
-        //         if (data.success) {
-        //             setCompanyData(data.company)
-        //             setCompanyToken(data.token)
-        //             localStorage.setItem('companyToken', data.token)
-        //             setShowRecruiterLogin(false)
-        //             navigate('/dashboard')
-        //         } else {
-        //             toast.error(data.message)
-        //         }
+                if (data.success) {
+                    setCompanyData(data.company)
+                    setCompanyToken(data.token)
+                    localStorage.setItem('companyToken', data.token) //whenever user reload the web page. token remains in the local storage and user remains logged in until token expires or user logs out
+                    setShowRecruiterLogin(false)
+                    navigate('/dashboard')
+                } else {
+                    toast.error(data.message)
+                }
 
-        //     } else {
+            } else {
 
-        //         const formData = new FormData()
-        //         formData.append('name', name)
-        //         formData.append('password', password)
-        //         formData.append('email', email)
-        //         formData.append('image', image)
+                const formData = new FormData()
+                formData.append('name', name)
+                formData.append('password', password)
+                formData.append('email', email)
+                formData.append('image', image)
 
-        //         const { data } = await axios.post(backendUrl + '/api/company/register', formData)
+                const { data } = await axios.post(backendURL + '/api/company/register', formData)
 
-        //         if (data.success) {
-        //             setCompanyData(data.company)
-        //             setCompanyToken(data.token)
-        //             localStorage.setItem('companyToken', data.token)
-        //             setShowRecruiterLogin(false)
-        //             navigate('/dashboard')
-        //         } else {
-        //             toast.error(data.message)
-        //         }
+                if (data.success) {
+                    setCompanyData(data.company)
+                    setCompanyToken(data.token)
+                    localStorage.setItem('companyToken', data.token)
+                    setShowRecruiterLogin(false)
+                    navigate('/dashboard')
+                } else {
+                    toast.error(data.message)
+                }
+            }
 
-        //     }
-
-        // } catch (error) {
-        //     toast.error(error.message)
-        // }
+        } catch (error) {
+            toast.error(error.message)
+        }
 
     }
 
