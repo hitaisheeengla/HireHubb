@@ -4,6 +4,7 @@ import User from "../models/User.js";
 //api controller function to manage clerk user with database
 export const clerkWebhooks = async (req, res) => {
     console.log("Webhook received");
+    console.log("Type:", req.body.type);
     try {
         //create a svix instance with clerk webhook secret
         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
@@ -20,10 +21,11 @@ export const clerkWebhooks = async (req, res) => {
 
         switch (type) {
             case 'user.created':{
+                console.log("Creating user");
                 const userData={
                     _id:data.id,
                     email:data.email_addresses[0].email_address,
-                    name:data.first_name + " " + data.last_name,
+                    name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
                     image:data.image_url,
                     resume:''
                 }
@@ -37,7 +39,7 @@ export const clerkWebhooks = async (req, res) => {
                 const userData={
                     _id:data.id,
                     email:data.email_addresses[0].email_address,
-                    name:data.first_name + " " + data.last_name,
+                    name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
                     image:data.image_url
                 }
                 await User.findByIdAndUpdate(data.id, userData);
