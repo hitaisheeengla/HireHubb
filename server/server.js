@@ -29,8 +29,9 @@ await connectCloudinary();
 
 
 app.use(cors());
-app.post('/webhooks',clerkWebhooks);
+
 app.use(express.json());
+app.post('/webhooks',clerkWebhooks);
 app.use(clerkMiddleware()); //help decode token and get user info from it.
 
 app.get('/', (req, res) => {
