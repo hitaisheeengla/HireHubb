@@ -9,7 +9,7 @@ import generateToken from "../utils/generateToken.js";
 export const registerCompany = async (req, res) => {
     const { name, email, password } = req.body;
     const imageFile = req.file;
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !imageFile) {
         return res.json({ success: false, message: 'All fields are required' });
     }
 
@@ -30,9 +30,7 @@ export const registerCompany = async (req, res) => {
         // console.log(imageUpload);
         // console.log("After upload");
 
-        const imageUpload = {
-            secure_url: "https://via.placeholder.com/300"
-        };
+        const imageUpload = await cloudinary.uploader.upload(imageFile.path)
 
         const company = await Company.create({ name, email, password: hashedPassword, image: imageUpload.secure_url });
         res.json({
@@ -60,7 +58,6 @@ export const registerCompany = async (req, res) => {
         //     });
         // }
     } catch (error) {
-        console.dir(error, { depth: null });
         return res.json({
             success: false,
             message: error.message
@@ -151,7 +148,21 @@ export const postJob = async (req, res) => {
 
 //get company job applicants
 export const getJobApplicants = async (req, res) => {
+    try{
+        const companyId = req.company._id;
 
+        //find all job applications for the company
+        const jobApplications = await JobApplication.find({ companyId }).populate('jobId', 'title description location category level salary').populate('userId', 'name email resume').exec();
+        return res.json({
+            success: true,
+            jobApplications
+        }); 
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: error.message
+        });
+    }
 }
 
 //get company posted jobs
@@ -183,7 +194,22 @@ export const getCompanyPostedJobs = async (req, res) => {
 
 //change job application status
 export const changeApplicationStatus = async (req, res) => {
+    try {
+        const { id, status } = req.body;
 
+        //find job application by id and update status
+        await JobApplication.findOneAndUpdate({ _id: id }, { status }, { new: true });
+
+        return res.json({
+            success: true,
+            message: 'Application status updated successfully'
+        });
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: error.message
+        });
+    }
 }
 
 //change job visibility

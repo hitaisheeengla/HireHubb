@@ -25,7 +25,7 @@ router.get('/applicants', protectCompany, getJobApplicants);
 router.get('/list-jobs', protectCompany, getCompanyPostedJobs);
 
 //change job application status
-router.put('/change-status', protectCompany, changeApplicationStatus);
+router.post('/change-status', protectCompany, changeApplicationStatus);
 
 //change job visibility
 router.post('/change-visibility', protectCompany, changeVisibility);

@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Job from '../models/Job.js';
 import JobApplication from '../models/JobApplication.js';
+import { v2 as cloudinary } from "cloudinary"
 
 //get user data
 export const getUserData = async (req, res) => {
@@ -8,11 +9,9 @@ export const getUserData = async (req, res) => {
     // console.log(userId);
 
     const { userId } = req.auth();
-console.log("userId =", userId);
 
     try {
         const user = await User.findById(userId);
-        console.log("user =", user);
 
         if (!user) {
             return res.json({
@@ -37,12 +36,11 @@ console.log("userId =", userId);
 //apply for a job
 export const applyForJob = async (req, res) => {
     const { jobId } = req.body;
-    const userId = req.auth.user;
+    const { userId } = req.auth();
 
     try {
         const isAlreadyApplied = await JobApplication.findOne({ jobId, userId });
-
-        if (isAlreadyApplied.length > 0) {
+        if (isAlreadyApplied) {
             return res.json({
                 success: false,
                 message: 'User has already applied for this job'
@@ -78,10 +76,10 @@ export const applyForJob = async (req, res) => {
 export const getUserJobApplications = async (req, res) => {
 
     try {
-        const userId = req.auth.user;
-        const jobApplications = await JobApplication.find({ userId }).populate('jobId','title description location category level salary').populate('companyId','name email image').exec();
+        const { userId } = req.auth();
+        const jobApplications = await JobApplication.find({ userId }).populate('jobId', 'title description location category level salary').populate('companyId', 'name email image').exec();
 
-        if(!jobApplications){
+        if (!jobApplications) {
             return res.json({
                 success: false,
                 message: 'No job applications found for this user'
@@ -102,20 +100,22 @@ export const getUserJobApplications = async (req, res) => {
 //update user profile(resume)
 export const updateUserResume = async (req, res) => {
     try {
-        const userId = req.auth.user;
+        const { userId } = req.auth();
         const resumeFile = req.file;
-        const userData=await User.findById(userId);
+        const userData = await User.findById(userId);
 
-        if(resumeFile){
-            const resumeUpload=await cloudinary.uploader.upload(resumeFile.path)
-            userData.resumeFile=resumeUpload.secure_url;
-            await userData.save();
-            res.json({
-                success: true,
-                message: 'Resume updated successfully',
-                // resumeUrl: userData.resumeFile
-            });
+      
+        if (resumeFile) {
+            const resumeUpload = await cloudinary.uploader.upload(resumeFile.path)
+            userData.resume = resumeUpload.secure_url;
         }
+        await userData.save(); 
+        res.json({
+            success: true,
+            message: 'Resume updated successfully',
+            // resumeUrl: userData.resume
+        });
+
     } catch (error) {
         res.json({
             success: false,

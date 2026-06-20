@@ -76,7 +76,7 @@ const ApplyJob = () => {
 
   const checkAlreadyApplied = () => {
 
-    const hasApplied = userApplications.some(item => item.jobId._id === JobData._id)
+    const hasApplied = userApplications.some(item => item.jobId._id === JobData._id)//checks if the user has already applied for this job by comparing the jobId of each application with the current job's id. If a match is found, hasApplied will be true; otherwise, it will be false.
     setIsAlreadyApplied(hasApplied)
 
   }
@@ -87,11 +87,11 @@ const ApplyJob = () => {
     }
   }, [id,jobs])
 
-  // useEffect(() => {
-  //   if (userApplications.length > 0 && JobData) {
-  //     checkAlreadyApplied()
-  //   }
-  // }, [JobData, userApplications, id])
+  useEffect(() => {
+    if (userApplications.length > 0 && JobData) {
+      checkAlreadyApplied()
+    }
+  }, [JobData, userApplications, id])
 
   return JobData ? (
     <>
@@ -127,7 +127,7 @@ const ApplyJob = () => {
 
             <div className='flex flex-col justify-center text-end text-sm max-md:mx-auto max-md:text-center'>
               <button 
-              // onClick={applyHandler} 
+              onClick={applyHandler} 
               className='bg-blue-600 p-2.5 px-10 text-white rounded'>{isAlreadyApplied ? 'Already Applied' : 'Apply Now'}</button>
               <p className='mt-1 text-gray-600'>Posted {moment(JobData.date).fromNow()}</p>
             </div>
@@ -139,20 +139,20 @@ const ApplyJob = () => {
               <h2 className='font-bold text-2xl mb-4'>Job description</h2>
               <div className='rich-text' dangerouslySetInnerHTML={{ __html: JobData.description }}></div>
               <button 
-              // onClick={applyHandler} 
+              onClick={applyHandler} 
               className='bg-blue-600 p-2.5 px-10 text-white rounded mt-10'>{isAlreadyApplied ? 'Already Applied' : 'Apply Now'}</button>
             </div>
             {/* Right Section More Jobs */}
             <div className='w-full lg:w-1/3 mt-8 lg:mt-0 lg:ml-8 space-y-5'>
               <h2>More jobs from {JobData.companyId.name}</h2>
               {jobs.filter(job => job._id !== JobData._id && job.companyId._id === JobData.companyId._id)
-                .filter(job => true
-                //   {
-                //   // Set of applied jobIds
-                //   const appliedJobsIds = new Set(userApplications.map(app => app.jobId && app.jobId._id))
-                //   // Return true if the user has not already applied for this job
-                //   return !appliedJobsIds.has(job._id)
-                // }
+                .filter(job => 
+                  {
+                  // Set of applied jobIds
+                  const appliedJobsIds = new Set(userApplications.map(app => app.jobId && app.jobId._id))
+                  // Return true if the user has not already applied for this job
+                  return !appliedJobsIds.has(job._id)
+                }
               ).slice(0, 4)
                 .map((job, index) => <JobCard key={index} job={job} />)}
             </div>
